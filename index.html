@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>WeekDate</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+        background-color: #f0f0f0;
+      }
+      #quiz-container {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        max-width: 600px;
+        margin: auto;
+        text-align: center;
+      }
+      #popup {
+        display: none;
+        background-color: rgba(0, 0, 0, 0.8);
+        color: #fff;
+        padding: 20px;
+        border-radius: 6px;
+        position: absolute;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 1000;
+      }
+      .choice-button {
+        margin: 5px;
+        padding: 10px 15px;
+        font-size: 16px;
+        cursor: pointer;
+      }
+      .next-button {
+        margin-top: 20px;
+        padding: 10px 15px;
+        font-size: 16px;
+        cursor: pointer;
+      }
+      #stat-container {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 30px;
+        flex-wrap: wrap;
+      }
+      .stat-column {
+        width: 30%;
+        background-color: #ffffff;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        box-sizing: border-box;
+        margin: 5px 0;
+      }
+      #pause-button,
+      #separate-button {
+        margin-top: 20px;
+        padding: 10px 15px;
+        font-size: 16px;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="quiz-container">
+      <div id="popup">
+        <h1>Paused</h1>
+      </div>
+      <h1 id="date-text"></h1>
+
+      <div id="button-container">
+        <button class="choice-button" id="1">Monday</button>
+        <button class="choice-button" id="2">Tuesday</button>
+        <button class="choice-button" id="3">Wednesday</button>
+        <button class="choice-button" id="4">Thursday</button>
+        <button class="choice-button" id="5">Friday</button>
+        <button class="choice-button" id="6">Saturday</button>
+        <button class="choice-button" id="0">Sunday</button>
+      </div>
+      <div id="next-container">
+        <button class="next-button" id="next-button">Continue</button>
+      </div>
+    </div>
+
+    <p id="correct">0/0 correct</p>
+    <div id="stat-container">
+      <div class="stat-column" id="year-column">
+        <p><b>Year code:</b></p>
+        <p id="year-last">Last: -</p>
+        <p id="year-average">Avg: -</p>
+        <p id="year-best">Best: -</p>
+        <p id="year-worst">Worst: -</p>
+      </div>
+      <div class="stat-column" id="rest-column">
+        <p><b>Rest:</b></p>
+        <p id="rest-last">Last: -</p>
+        <p id="rest-average">Avg: -</p>
+        <p id="rest-best">Best: -</p>
+        <p id="rest-worst">Worst: -</p>
+      </div>
+      <div class="stat-column">
+        <p id="total-time-label"><b>Total time:</b></p>
+        <p id="total-last">Last: -</p>
+        <p id="total-average">Avg: -</p>
+        <p id="total-best">Best: -</p>
+        <p id="total-worst">Worst: -</p>
+      </div>
+    </div>
+
+    <button id="pause-button">Pause</button>
+    <button id="separate-button">Separate</button>
+
+    <script>
+      const dateText = document.getElementById("date-text");
+      const correctText = document.getElementById("correct");
+      const popup = document.getElementById("popup");
+      const pauseButton = document.getElementById("pause-button");
+      const nextButton = document.getElementById("next-button");
+      const separateButton = document.getElementById("separate-button");
+
+      let paused = false;
+      let currentCorrect = 0;
+      let total = 0;
+
+      function randomDate() {
+        const start = new Date(2000, 0, 1);
+        const end = new Date(2099, 11, 31);
+        return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
+      }
+
+      let currentDate;
+
+      function showNewDate() {
+        currentDate = randomDate();
+        dateText.textContent = currentDate.toDateString();
+        popup.style.display = "none";
+      }
+
+      function updateScore(correct) {
+        total++;
+        if (correct) currentCorrect++;
+        correctText.textContent = `${currentCorrect}/${total} correct`;
+      }
+
+      document.querySelectorAll(".choice-button").forEach(button => {
+        button.addEventListener("click", () => {
+          if (paused) return;
+          const selected = parseInt(button.id);
+          const correctDay = currentDate.getDay(); // Sunday = 0, Monday = 1, ...
+          const isCorrect = selected === correctDay;
+          updateScore(isCorrect);
+        });
+      });
+
+      nextButton.addEventListener("click", () => {
+        if (!paused) {
+          showNewDate();
+        }
+      });
+
+      pauseButton.addEventListener("click", () => {
+        paused = !paused;
+        popup.style.display = paused ? "block" : "none";
+      });
+
+      separateButton.addEventListener("click", () => {
+        alert("Separate feature not implemented.");
+      });
+
+      // Initial load
+      showNewDate();
+    </script>
+  </body>
+</html>
